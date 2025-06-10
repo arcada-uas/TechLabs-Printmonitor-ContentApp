@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if message %}
+    <p>{{ message }}</p>
+    {% endif %}
+    
+    {#TODO: Instrubctions for user#}
+    <form id="uploadform" method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        {{ form.photos.label }}<br>
+        {{ form.photos(size=64, id="files") }}<br>
+    </form>
+    <script>
+        document.getElementById("files").onchange = function() {
+    document.getElementById("uploadform").submit();
+};
+    </script>
+{% endblock %}
