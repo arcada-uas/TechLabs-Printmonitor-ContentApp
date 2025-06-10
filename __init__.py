@@ -108,6 +108,11 @@ def list_memes():
     memes = load_json("static/meme_data.json")
     return flask.render_template('list_memes.html', title='Memez pending approval', memes = memes, message = None)
 
+@app.route('api/memes/', methods=['GET'])
+def meme_api():
+    memes = load_json("static/meme_data.json")
+    return memes
+
 @app.shell_context_processor
 def ctx():
     return {"app": app}
