@@ -74,7 +74,7 @@ def submit_memes():
         user = TextAreaField('Your user name')
         photos = MultipleFileField(validators=[
             FileRequired(),
-            FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
+            FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images only!')])
         submit = SubmitField('Upload')
 
     form = MemeForm(CombinedMultiDict((flask.request.files, flask.request.form)))
@@ -108,7 +108,7 @@ def list_memes():
     memes = load_json("static/meme_data.json")
     return flask.render_template('list_memes.html', title='Memez pending approval', memes = memes, message = None)
 
-@app.route('api/memes/', methods=['GET'])
+@app.route('/api/memes/', methods=['GET'])
 def meme_api():
     memes = load_json("static/meme_data.json")
     return memes
