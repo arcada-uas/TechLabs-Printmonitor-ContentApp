@@ -6,12 +6,12 @@
     {% endif %}
     {% for meme in memes %}
         {% if meme.approved %}
-            <div>
-                <img src={{ url_for('static', filename= meme.filename ) }} height="300">
-            </div>
                 <p>This meme, uploaded by {{ meme.user }}, has been approved for display!</p>
             {% else %}
                 <p>This meme, uploaded by {{ meme.user }}, is pending approval.</p>
             {% endif %}
+            <div>
+                <img src={{ url_for('static', filename= meme.filename ) }} height="300">
+            </div>
     {% endfor %}
 {% endblock %}

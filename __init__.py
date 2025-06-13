@@ -1,6 +1,6 @@
 import flask
 from flask_wtf import FlaskForm
-from wtforms import TextAreaField
+from wtforms import TextAreaField, HiddenField
 from flask_wtf.file import MultipleFileField, FileAllowed, FileRequired
 from wtforms import SubmitField
 from werkzeug.utils import secure_filename
@@ -17,6 +17,7 @@ app.config.from_mapping(
 app.jinja_env.globals.update(reversed=reversed) # Not crucial, but it's nice to have newer stuff on top of the page
 
 approved_jobs_file = "static/job_data.json" # TODO: allow admin to manage jobs
+meme_data_path = "static/meme_data.json"
 
 @app.route('/')
 def index():
@@ -63,13 +64,13 @@ def submit_jobs():
         return flask.render_template('submit_jobs.html', title='Submit 3D print jobs', form=form, message = "Upload successful")
     return flask.render_template('submit_jobs.html', title='Submit 3D print jobs', form=form, message = None)
 
-@app.route('/3dprint/manage/')
-def admin():
-    return flask.render_template('admin.html', title='Manage printer jobs')
+@app.route('/manage/3dprint/', methods=['GET', 'POST'])
+def admin_3dprint():
+    return flask.render_template('admin_3dprint.html', title='Manage printer jobs')
 
 @app.route('/memes/submit/', methods=['GET', 'POST'])
 def submit_memes():
-    meme_data_path = "static/meme_data.json"
+    
     class MemeForm(FlaskForm):
         user = TextAreaField('Your user name')
         photos = MultipleFileField(validators=[
@@ -102,6 +103,40 @@ def submit_memes():
 
         return flask.render_template('submit_memes.html', title='Submit memez', form=form, message = "Upload successful")
     return flask.render_template('submit_memes.html', title='Submit memez', form=form, message = None)
+
+@app.route('/manage/memes/', methods=['GET', 'POST'])
+def admin_memes():
+    memes = load_json(meme_data_path)
+    class ManageMemesForm(FlaskForm):
+        approve = SubmitField('Approve')
+        feature = SubmitField('Feature')
+        disapprove = SubmitField('Disapprove')
+        unfeature = SubmitField('Unfeature')
+        meme = HiddenField()
+    form = ManageMemesForm()
+    result = flask.request.form
+    message = None
+    if 'approve' in result.keys():
+        memes[int(result['approve'])]['approved'] = True
+        print(memes[int(result['approve'])])
+
+    if 'feature' in result.keys():
+        memes[int(result['feature'])]['approved'] = True
+        memes[int(result['feature'])]['featured'] = "pending"
+        print(memes[int(result['feature'])])
+
+    if 'disapprove' in result.keys():
+        memes[int(result['disapprove'])]['approved'] = False
+        memes[int(result['disapprove'])]['featured'] = None
+        print(memes[int(result['disapprove'])])
+
+    if 'unfeature' in result.keys():
+        memes[int(result['unfeature'])]['featured'] = None
+        memes[int(result['unfeature'])]['approved'] = True
+        print(memes[int(result['unfeature'])])
+
+    save_json(memes, meme_data_path)
+    return flask.render_template('admin_memes.html', title='Manage memes', memes = dict(enumerate(memes)), form=form, message = message)
 
 @app.route('/memes/', methods=['GET'])
 def list_memes():
