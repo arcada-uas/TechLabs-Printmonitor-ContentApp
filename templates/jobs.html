@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if message %}
+    <p>{{ message }}</p>
+    {% endif %}
+    {% for job in jobs %}
+        <div>
+
+        {% if not job.deleted %}
+
+        <p>Job submitted by {{ job.user }}</p>
+        <p>at {{ job.date }}</p>
+        <p>Description: {{ job.description }}</p>
+
+        {% if job.approved %}
+            <p>This job has been approved.</p>
+        {% endif %}
+
+        {% if job.denied %}
+            <p>This job has been denied, because: {{ job.denied }}</p>
+        {% endif %}
+
+        {% if job.completed %}
+            <p>This job has been completed on {{ job.completed }}.</p>
+        {% endif %}
+
+        {% endif %}
+
+        </div>
+        <hr>
+    {% endfor %}
+{% endblock %}

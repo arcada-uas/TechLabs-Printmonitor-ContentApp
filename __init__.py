@@ -1,6 +1,8 @@
 import flask
+from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from flask_wtf import FlaskForm
-from wtforms import TextAreaField, HiddenField
+from wtforms import TextAreaField, HiddenField, StringField, PasswordField, BooleanField
+from wtforms.validators import ValidationError, DataRequired
 from flask_wtf.file import MultipleFileField, FileAllowed, FileRequired
 from wtforms import SubmitField
 from werkzeug.utils import secure_filename
@@ -9,6 +11,8 @@ import os
 import datetime
 import json
 
+from . import admin
+
 app = flask.Flask(__name__)
 
 app.config.from_mapping(
@@ -16,21 +20,59 @@ app.config.from_mapping(
 
 app.jinja_env.globals.update(reversed=reversed) # Not crucial, but it's nice to have newer stuff on top of the page
 
-approved_jobs_file = "static/job_data.json" # TODO: allow admin to manage jobs
+login = LoginManager(app)
+login.login_view = 'login'
+
+@login.user_loader
+def load_user(id):
+    return admin.user
+
+job_data_path = "static/job_data.json" # TODO: allow admin to manage jobs
 meme_data_path = "static/meme_data.json"
 
 @app.route('/')
 def index():
     return flask.render_template('index.html', title='Home')
 
-@app.route('/jobs/')
-def list():
-    job_list = load_json(approved_jobs_file)
-    return job_list
+@app.route('/manage/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return flask.redirect(flask.url_for('index'))
+    else:
+        class LoginForm(FlaskForm):
+            username = StringField('Username', validators=[DataRequired()])
+            password = PasswordField('Password', validators=[DataRequired()])
+            remember_me = BooleanField('Remember Me')
+            submit = SubmitField('Sign In')
+
+        form = LoginForm()
+        
+        if form.validate_on_submit():
+            user = admin.user()
+            print("check:", form.username.data, form.password.data)
+            if not user.check_username(form.username.data) and user.check_password(form.password.data):
+                flask.flash('Invalid username or password')
+                return flask.redirect(flask.url_for('login'))
+            login_user(user, remember=form.remember_me.data)
+            flask.flash('Logged in successfully.')
+            next_page = flask.request.args.get('next')
+            if not next_page or urlsplit(next_page).netloc != '':
+                next_page = flask.url_for('index')
+            return flask.redirect(next_page)
+    return flask.render_template('login.html', title='Sign in to manage content', form=form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return flask.redirect(flask.url_for('index'))
+
+@app.route('/3dprint/')
+def list_jobs():
+    job_list = load_json(job_data_path)
+    return flask.render_template('jobs.html', jobs=job_list, title='Submitted printer jobs')
 
 @app.route('/3dprint/submit/', methods=['GET', 'POST'])
 def submit_jobs():
-    job_data_path = "static/job_data.json"
     class PrintForm(FlaskForm):
         user = TextAreaField('Your user name')
         description = TextAreaField('Describe your print job.')
@@ -52,6 +94,9 @@ def submit_jobs():
             f.save(file_path)
             new_job = {
                 "approved" : False,
+                "denied" : False,
+                "completed" : False,
+                "deleted" : False,
                 "date" : str(datetime.datetime.now()),
                 "user" : form.user.data,
                 "description" : form.description.data,
@@ -63,10 +108,6 @@ def submit_jobs():
 
         return flask.render_template('submit_jobs.html', title='Submit 3D print jobs', form=form, message = "Upload successful")
     return flask.render_template('submit_jobs.html', title='Submit 3D print jobs', form=form, message = None)
-
-@app.route('/manage/3dprint/', methods=['GET', 'POST'])
-def admin_3dprint():
-    return flask.render_template('admin_3dprint.html', title='Manage printer jobs')
 
 @app.route('/memes/submit/', methods=['GET', 'POST'])
 def submit_memes():
@@ -93,6 +134,8 @@ def submit_memes():
             f.save(file_path)
             new_meme = {
                 "approved" : False,
+                "featured" : None,
+                "deleted" : False,
                 "date" : str(datetime.datetime.now()),
                 "user" : form.user.data,
                 "filename" : new_filename
@@ -104,39 +147,86 @@ def submit_memes():
         return flask.render_template('submit_memes.html', title='Submit memez', form=form, message = "Upload successful")
     return flask.render_template('submit_memes.html', title='Submit memez', form=form, message = None)
 
-@app.route('/manage/memes/', methods=['GET', 'POST'])
+@app.route('/manage/3dprint/', methods=['GET', 'POST'])
+def admin_3dprint():
+    if current_user.is_authenticated:
+        job_list = load_json(job_data_path)
+        class ManageJobsForm(FlaskForm):
+            approve = SubmitField('Approve')
+            deny = SubmitField('Deny')
+            complete = SubmitField('Mark completed')
+            delete = SubmitField('Delete')
+            reset = SubmitField('Reset')
+            job = HiddenField()
+        form = ManageJobsForm()
+        result = flask.request.form
+        message = None
+        if 'approve' in result.keys():
+            job_list[int(result['approve'])]['approved'] = True
+            job_list[int(result['approve'])]['denied'] = False
+            print(job_list[int(result['approve'])])
+
+        if 'deny' in result.keys():
+            job_list[int(result['deny'])]['denied'] = result['reason']
+            job_list[int(result['deny'])]['approved'] = False
+            print(job_list[int(result['deny'])])
+
+        if 'complete' in result.keys():
+            datestring_today = str(datetime.datetime.now()).split()[0]
+            job_list[int(result['complete'])]['completed'] = datestring_today
+            print(job_list[int(result['complete'])])
+
+        if 'delete' in result.keys():
+            job_list[int(result['delete'])]['deleted'] = True
+            print(job_list[int(result['delete'])])
+
+        if 'reset' in result.keys():
+            job_list[int(result['reset'])]['approved'] = False
+            job_list[int(result['reset'])]['denied'] = False
+            job_list[int(result['reset'])]['completed'] = None
+            job_list[int(result['reset'])]['deleted'] = None
+            print(job_list[int(result['reset'])])
+
+        save_json(job_list, job_data_path)
+        return flask.render_template('admin_3dprint.html', jobs=dict(enumerate(job_list)), title='Manage printer jobs')
+    else:
+        return flask.redirect(flask.url_for('login'))
+
+@app.route('/manage/memes/', methods=['GET', 'POST']) # delete
 def admin_memes():
-    memes = load_json(meme_data_path)
-    class ManageMemesForm(FlaskForm):
-        approve = SubmitField('Approve')
-        feature = SubmitField('Feature')
-        disapprove = SubmitField('Disapprove')
-        unfeature = SubmitField('Unfeature')
-        meme = HiddenField()
-    form = ManageMemesForm()
-    result = flask.request.form
-    message = None
-    if 'approve' in result.keys():
-        memes[int(result['approve'])]['approved'] = True
-        print(memes[int(result['approve'])])
+    if current_user.is_authenticated:
+        memes = load_json(meme_data_path)
+        class ManageMemesForm(FlaskForm):
+            approve = SubmitField('Approve')
+            feature = SubmitField('Feature')
+            disapprove = SubmitField('Disapprove')
+            unfeature = SubmitField('Unfeature')
+            meme = HiddenField()
+        form = ManageMemesForm()
+        result = flask.request.form
+        message = None
+        if 'approve' in result.keys():
+            memes[int(result['approve'])]['approved'] = True
+            print(memes[int(result['approve'])])
 
-    if 'feature' in result.keys():
-        memes[int(result['feature'])]['approved'] = True
-        memes[int(result['feature'])]['featured'] = "pending"
-        print(memes[int(result['feature'])])
+        if 'feature' in result.keys():
+            memes[int(result['feature'])]['approved'] = True
+            memes[int(result['feature'])]['featured'] = "pending"
+            print(memes[int(result['feature'])])
 
-    if 'disapprove' in result.keys():
-        memes[int(result['disapprove'])]['approved'] = False
-        memes[int(result['disapprove'])]['featured'] = None
-        print(memes[int(result['disapprove'])])
+        if 'disapprove' in result.keys():
+            memes[int(result['disapprove'])]['approved'] = False
+            memes[int(result['disapprove'])]['featured'] = None
+            print(memes[int(result['disapprove'])])
 
-    if 'unfeature' in result.keys():
-        memes[int(result['unfeature'])]['featured'] = None
-        memes[int(result['unfeature'])]['approved'] = True
-        print(memes[int(result['unfeature'])])
+        if 'unfeature' in result.keys():
+            memes[int(result['unfeature'])]['featured'] = None
+            memes[int(result['unfeature'])]['approved'] = True
+            print(memes[int(result['unfeature'])])
 
-    save_json(memes, meme_data_path)
-    return flask.render_template('admin_memes.html', title='Manage memes', memes = dict(enumerate(memes)), form=form, message = message)
+        save_json(memes, meme_data_path)
+        return flask.render_template('admin_memes.html', title='Manage memes', memes = dict(enumerate(memes)), form=form, message = message)
+    else: return flask.redirect(flask.url_for('login'))
 
 @app.route('/memes/', methods=['GET'])
 def list_memes():
@@ -147,6 +237,12 @@ def list_memes():
 def meme_api():
     memes = load_json("static/meme_data.json")
     return memes
+
+@app.route('/api/jobs/')
+def print_api():
+    # TODO: get approved jobs
+    all_jobs = load_json(job_data_path)
+    return all_jobs
 
 @app.shell_context_processor
 def ctx():

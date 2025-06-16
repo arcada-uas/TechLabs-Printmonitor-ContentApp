@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if message %}
+    <p>{{ message }}</p>
+    {% endif %}
+    {% for key, job in jobs.items() %}
+        <div>
+            <form method="POST" action="">
+                <p>Job submitted by {{ job.user }}</p>
+                <p>at {{ job.date }}</p>
+                <p>Description: {{ job.description }}</p>
+                <p>filename: {{ job.filename }}</p>
+
+                {% if job.approved %}
+                    <p>This job has been approved.</p>
+                {% endif %}
+
+                {% if job.denied %}
+                    <p>This job has been denied, because: {{ job.denied }}</p>
+                {% endif %}
+
+                {% if job.completed %}
+                    <p>This job has been completed on {{ job.completed }}.</p>
+                {% endif %}
+
+                {% if job.deleted %}
+                    <p>This job has been deleted and is only visible to admin.</p>
+                {% endif %}
+
+
+                    {% if not job.approved %}
+                    <button type="submit" name="approve" value={{ key }}>
+                    Approve
+                    </button>
+                    {% endif %}
+
+                    {% if not job.denied %}
+                    <input type="text" name="reason">
+                    <button type="submit" name="deny" value={{ key }}>
+                    Deny
+                    </button>
+        
+                    {% endif %}
+        
+                    {% if not job.completed %}
+                    <button type="submit" name="complete" value={{ key }}>
+                    Mark Completed
+                    </button>
+        
+                    {% endif %}
+        
+                    {% if not job.deleted %}
+                    <button type="submit" name="delete" value={{ key }}>
+                    Delete
+                    </button>
+        
+                    {% endif %}
+
+                    {% if job.approved or job.denied or job.completed or job.deleted %}
+
+                    <button type="submit" name="reset" value={{ key }}>
+                        Reset Status
+                    </button>
+                    {% endif %}
+            </form>
+        </div>
+        {% endfor %}
+    {% endblock %}
