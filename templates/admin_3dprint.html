@@ -4,7 +4,7 @@
     {% if message %}
     <p>{{ message }}</p>
     {% endif %}
-    {% for key, job in jobs.items() %}
+    {% for key, job in jobs.items()|reverse %}
         <div>
             <form method="POST" action="">
                 <p>Job submitted by {{ job.user }}</p>

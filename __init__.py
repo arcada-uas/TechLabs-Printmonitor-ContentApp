@@ -18,8 +18,6 @@ app = flask.Flask(__name__)
 app.config.from_mapping(
     SECRET_KEY='dev')
 
-app.jinja_env.globals.update(reversed=reversed) # Not crucial, but it's nice to have newer stuff on top of the page
-
 login = LoginManager(app)
 login.login_view = 'login'
 
@@ -178,6 +176,7 @@ def admin_3dprint():
 
         if 'delete' in result.keys():
             job_list[int(result['delete'])]['deleted'] = True
+            job_list[int(result['delete'])]['approved'] = False
             print(job_list[int(result['delete'])])
 
         if 'reset' in result.keys():
@@ -207,10 +206,12 @@ def admin_memes():
         message = None
         if 'approve' in result.keys():
             memes[int(result['approve'])]['approved'] = True
+            memes[int(result['approve'])]['deleted'] = False
             print(memes[int(result['approve'])])
 
         if 'feature' in result.keys():
             memes[int(result['feature'])]['approved'] = True
+            memes[int(result['feature'])]['deleted'] = False
             memes[int(result['feature'])]['featured'] = "pending"
             print(memes[int(result['feature'])])
 
@@ -223,6 +224,12 @@ def admin_memes():
             memes[int(result['unfeature'])]['featured'] = None
             memes[int(result['unfeature'])]['approved'] = True
             print(memes[int(result['unfeature'])])
+
+        if 'delete' in result.keys():
+            memes[int(result['delete'])]['deleted'] = True
+            memes[int(result['delete'])]['featured'] = None
+            memes[int(result['delete'])]['approved'] = False
+            print(memes[int(result['delete'])])
 
         save_json(memes, meme_data_path)
         return flask.render_template('admin_memes.html', title='Manage memes', memes = dict(enumerate(memes)), form=form, message = message)

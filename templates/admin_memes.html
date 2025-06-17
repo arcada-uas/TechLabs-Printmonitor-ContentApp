@@ -4,7 +4,7 @@
     {% if message %}
     <p>{{ message }}</p>
     {% endif %}
-    {% for key, meme in memes.items() %}
+    {% for key, meme in memes.items()|reverse %}
             <div>
                 <img src={{ url_for('static', filename= meme.filename ) }} height="300">
             </div>
@@ -33,6 +33,14 @@
                 <button type="submit" name="feature" value={{ key }}>
                 Feature
                 </button>
+            {% endif %}
+            {% if meme.deleted %}
+                <strong>THIS MEME HAS BEEN DELETED</strong>
+                <p>It is only visible to admin.</p>
+            {% else %}
+            <button type="submit" name="delete" value={{ key }}>
+            Delete
+            </button>
             {% endif %}
             </form>
             <br>
