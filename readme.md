@@ -5,9 +5,14 @@ This app is designed to communicate with TechLabs-Printmonitor. Users can submit
 ## Installation
 
 To install dependencies run:
-pip intall -r requirements.txt
+`pip install -r requirements.txt`
+
+Install and deply TechLabs-Printmonitor by following isntructions at:
+`https://github.com/Kraakan/TechLabs-Printmonitor`
 
 ## Deployment
+
+`flask --app . run`
 
 > [!NOTE]
 > `.env` file is required, containing the following secrets:
@@ -15,6 +20,8 @@ pip intall -r requirements.txt
 > ADMIN_USERNAME=YOUR_USERNAME 
 > ADMIN_PASSWORD=YOUR_PASSWORD
 >```
+
+If you deployed TechLabs-Printmonitor before starting this app and uploading content, your approved content will be fetched in a minute or so.
 
 # Endpoints
 
