@@ -7,7 +7,7 @@ This app is designed to communicate with TechLabs-Printmonitor. Users can submit
 To install dependencies run:
 `pip install -r requirements.txt`
 
-Install and deply TechLabs-Printmonitor by following isntructions at:
+Install and deploy TechLabs-Printmonitor by following isntructions at:
 `https://github.com/Kraakan/TechLabs-Printmonitor`
 
 ## Deployment
