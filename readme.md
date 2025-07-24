@@ -1,14 +1,18 @@
 # Content manager app for TechLabs-Printmonitor #
 
-This app is designed to communicate with TechLabs-Printmonitor. Users can submit content to be shown on the monitor, and jobs for the 3D printer. Content and jobs that have been approved by an admin is fetched by TechLabs-Printmonitor (fork).
+This app is designed to communicate with [TechLabs-Printmonitor](https://github.com/Kraakan/TechLabs-Printmonitor). Users can submit content to be shown on the monitor, and jobs for the 3D printer. Content and jobs have to be approved by an admin, and once approved it is fetched by TechLabs-Printmonitor.
 
 ## Installation
+
+RECOMMENDED! Create a venv, and activate it:
+`python3 -m venv .venv`
+`source .venv/bin/activate`
 
 To install dependencies run:
 `pip install -r requirements.txt`
 
 Install and deploy TechLabs-Printmonitor by following isntructions at:
-`https://github.com/Kraakan/TechLabs-Printmonitor`
+[`https://github.com/Kraakan/TechLabs-Printmonitor`](https://github.com/Kraakan/TechLabs-Printmonitor)
 
 ## Deployment
 
