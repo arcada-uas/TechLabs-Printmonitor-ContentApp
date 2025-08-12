@@ -4,12 +4,30 @@ This app is designed to communicate with [TechLabs-Printmonitor](https://github.
 
 ## Installation
 
-RECOMMENDED! Create a venv, and activate it:
-`python3 -m venv .venv`
-`source .venv/bin/activate`
+> [!NOTE]
+> This app requires Python 3.11. 
+>
+> If you are running another version of python on your system you can easily get this app to run 3.11 using pyenv:
+> ```
+> curl -fsSL https://pyenv.run | bash
+> export PYENV_ROOT="$HOME/.pyenv
+> [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+> eval "$(pyenv init - bash)"
+> pyenv install 3.11
+> pyenv global 3.11
+> ```
 
-To install dependencies run:
-`pip install -r requirements.txt`
+Then, proceed with creating and activating a venv with python 3.11 
+```
+python3 -m venv venv
+source venv/bin/activate 
+```
+
+Continue by installing the dependencies
+``` 
+pip install -r requirements.txt 
+```
+
 
 Install and deploy TechLabs-Printmonitor by following isntructions at:
 [`https://github.com/Kraakan/TechLabs-Printmonitor`](https://github.com/Kraakan/TechLabs-Printmonitor)
