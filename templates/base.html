@@ -10,32 +10,39 @@ https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ii-templates -
     <title>Title</title>
     {% endif %}
     </head>
-    <div>
-        <a href="{{ url_for('index') }}">Home</a></div>
-        
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('list_jobs') }}">3D print projects</a>
-        <a href="{{ url_for('submit_jobs') }}">Submit 3D print projects</a>
-        <a href="{{ url_for('list_memes') }}">Memes</a>
-        <a href="{{ url_for('submit_memes') }}">Submit Memes</a>
-        {% if current_user.is_authenticated %}
-        <a href="{{ url_for('admin_3dprint') }}">Manage Print jobs</a></div>
-        <a href="{{ url_for('admin_memes') }}">Manage Memes</a></div>
-        <a href="{{ url_for('logout') }}">Logout</a>
-        <p>Logged in admin</p>
-        {% endif %}
     <body>
-        <hr>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
+        <article>
+            <nav>
+                <ul>
+                    <a {% if request.path == url_for('list_memes') %} class="current" {% endif %} href="{{ url_for('list_memes') }}"><li>Memes</li></a>
+                    <a {% if request.path == url_for('list_jobs') %} class="current" {% endif %}href="{{ url_for('list_jobs') }}"><li>3D print projects</li></a>
+                    <hr>
+                    <a {% if request.path == url_for('submit_memes') %} class="current" {% endif %}href="{{ url_for('submit_memes') }}"><li>Submit Memes</li></a>
+                    <a {% if request.path == url_for('submit_jobs') %} class="current" {% endif %}href="{{ url_for('submit_jobs') }}"><li>Submit 3D print projects</li></a>
+                    {% if current_user.is_authenticated %}
+                        <hr>
+                        <a {% if request.path == url_for('admin_3dprint') %} class="current" {% endif %}href="{{ url_for('admin_3dprint') }}"><li>Manage Print jobs</li></a></div>
+                        <a {% if request.path == url_for('admin_memes') %} class="current" {% endif %}href="{{ url_for('admin_memes') }}"><li>Manage Memes</li></a></div>
+                    {% else %}
+                        <hr>
+                        <a {% if request.path == url_for('login') %} class="current" {% endif %}href="{{ url_for('login') }}"><li>Admin login</li></a>
+                    {% endif %}
+                </ul>
+            </nav>
+            <section>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
 
-        {% block content %}{% endblock %}
+                {% block content %}{% endblock %}
+            </section>
+        </article>
+        <footer><a target="_blank" href="https://github.com/kraakan">Made with ❤️ by <b>bistromd & kraakan</b></a></footer>
     </body>
 </html>

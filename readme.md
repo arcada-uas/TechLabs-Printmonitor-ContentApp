@@ -10,7 +10,7 @@ This app is designed to communicate with [TechLabs-Printmonitor](https://github.
 > If you are running another version of python on your system you can easily get this app to run 3.11 using pyenv:
 > ```
 > curl -fsSL https://pyenv.run | bash
-> export PYENV_ROOT="$HOME/.pyenv
+> export PYENV_ROOT="$HOME/.pyenv"
 > [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 > eval "$(pyenv init - bash)"
 > pyenv install 3.11

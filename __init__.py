@@ -255,6 +255,10 @@ def print_api():
 def ctx():
     return {"app": app}
 
+@app.template_filter("short_date")
+def format_date(date):
+    return date[:16]
+
 def load_json(json_data_path):
     try:
         json_data_file = open(json_data_path, "r")

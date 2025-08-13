@@ -4,30 +4,25 @@
     {% if message %}
     <p>{{ message }}</p>
     {% endif %}
-    {% for job in jobs|reverse %}
-        <div>
 
+    {% for job in jobs|reverse %}
         {% if not job.deleted %}
 
-        <p>Job submitted by {{ job.user }}</p>
-        <p>at {{ job.date }}</p>
-        <p>Description: {{ job.description }}</p>
-
-        {% if job.approved %}
-            <p>This job has been approved.</p>
+            <p><b>Submitted:</b> {{ job.date | short_date }} by {{ job.user }}<br>
+            <b>Description:</b> {{ job.description }}<br>
+            <b>Status:</b> 
+            {% if job.completed %}
+                <span class="completed">Completed</span> {{ job.completed }}</span><br><u>Please pick up your print from F364</u>
+            {% elif job.approved %}
+                <span class="approved">Approved</span>, queued for print
+            {% elif job.denied %}
+                <span class="denied">Denied</span><br><b>Reason:</b> {{ job.denied }}
+            {% else %}
+                <span class="pending">Pending</span>, awaiting approval
+            {% endif %}
+            </p>
+        
         {% endif %}
-
-        {% if job.denied %}
-            <p>This job has been denied, because: {{ job.denied }}</p>
-        {% endif %}
-
-        {% if job.completed %}
-            <p>This job has been completed on {{ job.completed }}.</p>
-        {% endif %}
-
-        {% endif %}
-
-        </div>
         <hr>
     {% endfor %}
 {% endblock %}
