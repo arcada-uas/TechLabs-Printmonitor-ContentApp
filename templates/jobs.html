@@ -12,7 +12,7 @@
             <b>Description:</b> {{ job.description }}<br>
             <b>Status:</b> 
             {% if job.completed %}
-                <span class="completed">Completed</span> {{ job.completed }}</span><br><u>Please pick up your print from F364</u>
+                <span class="completed">Completed</span> {{ job.completed }}<br><u>Please pick up your print from F364</u>
             {% elif job.approved %}
                 <span class="approved">Approved</span>, queued for print
             {% elif job.denied %}

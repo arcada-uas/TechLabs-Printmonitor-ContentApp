@@ -7,62 +7,30 @@
     {% for key, job in jobs.items()|reverse %}
         <div>
             <form method="POST" action="">
-                <p>Job submitted by {{ job.user }}</p>
-                <p>at {{ job.date }}</p>
-                <p>Description: {{ job.description }}</p>
-                <p>filename: {{ job.filename }}</p>
 
-                {% if job.approved %}
-                    <p>This job has been approved.</p>
-                {% endif %}
-
-                {% if job.denied %}
-                    <p>This job has been denied, because: {{ job.denied }}</p>
-                {% endif %}
-
-                {% if job.completed %}
-                    <p>This job has been completed on {{ job.completed }}.</p>
-                {% endif %}
-
-                {% if job.deleted %}
-                    <p>This job has been deleted and is only visible to admin.</p>
-                {% endif %}
-
-
-                    {% if not job.approved %}
-                    <button type="submit" name="approve" value={{ key }}>
-                    Approve
-                    </button>
+                <p><b>Submitted:</b> {{ job.date | short_date }} by {{ job.user }}<br>
+                    <b>Description:</b> {{ job.description }}<br>
+                    <b>Filename:</b> {{ job.filename }}<br>
+                    <b>Status:</b>
+                    {% if job.completed %}
+                        <span class="completed">Completed {{ job.completed }}</span><br>
+                    {% elif job.approved %}
+                        <span class="approved">Approved</span><br>
+                    {% elif job.denied %}
+                        <span class="denied">Denied</span><br><b>Reason:</b> {{ job.denied }}<br>
+                    {% elif job.deleted %}
+                        <span class="denied">Deleted (only visible to admin)</span><br>
+                    {% else %}
+                        <span class="pending">Pending</span><br>
                     {% endif %}
 
-                    {% if not job.denied %}
-                    <input type="text" name="reason">
-                    <button type="submit" name="deny" value={{ key }}>
-                    Deny
-                    </button>
-        
-                    {% endif %}
-        
-                    {% if not job.completed %}
-                    <button type="submit" name="complete" value={{ key }}>
-                    Mark Completed
-                    </button>
-        
-                    {% endif %}
-        
-                    {% if not job.deleted %}
-                    <button type="submit" name="delete" value={{ key }}>
-                    Delete
-                    </button>
-        
-                    {% endif %}
-
-                    {% if job.approved or job.denied or job.completed or job.deleted %}
-
-                    <button type="submit" name="reset" value={{ key }}>
-                        Reset Status
-                    </button>
-                    {% endif %}
+                    <button type="submit" class="btn approve_btn" name="approve" value={{ key }}>Approve</button>
+                    <input type="text" size="14" class="field" name="reason" placeholder="Denial reason">
+                    <button type="submit" class="btn deny_btn" name="deny" value={{ key }}>Deny</button>
+                    <br><button type="submit" class="btn" name="complete" value={{ key }}>Mark Completed</button>
+                    <button type="submit" class="btn delete_btn" name="delete" value={{ key }}>Delete</button>
+                    <button type="submit" class="btn reset_btn" name="reset" value={{ key }}>Reset Status</button>
+                </p><hr>
             </form>
         </div>
         {% endfor %}
