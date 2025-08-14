@@ -12,14 +12,15 @@
                 <div class="meme">
                     <h3>{{ meme.title }}</h3>
                     <img src={{ url_for('static', filename= meme.filename ) }} height="300">
-                </div><br>
-                {% if meme.featured %}
-                    <span class="completed">Featured</span> submission by <b>{{ meme.user }}</b>
-                {% elif meme.approved %}
-                    <span class="approved">Approved</span> submission by <b>{{ meme.user }}</b>
-                {% else %}
-                    <span class="pending">Pending</span> submission by <b>{{ meme.user }}</b>
-                {% endif %}
+                    <br>
+                    {% if meme.featured %}
+                        By <b>{{ meme.user }}</b> - <span class="completed">Featured</span>
+                    {% elif meme.approved %}
+                        By <b>{{ meme.user }}</b> - <span class="approved">Approved</span>
+                    {% else %}
+                        By <b>{{ meme.user }}</b> - <span class="pending">Pending</span>
+                    {% endif %}
+                </div>
             </p>
         {% endif %}
     {% endfor %}

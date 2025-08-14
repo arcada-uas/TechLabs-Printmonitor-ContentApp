@@ -64,12 +64,12 @@ a {
 .meme {
     margin: 5px 0px;
     display: inline-block;
-    padding: 15px 25px;
+    padding: 0px 25px 15px 25px;
     background-color: #00203b;
     border-radius: 10px;
 }
 h3 {
-    margin: 5px 0px
+    margin: 15px 0px;
 }
 .completed {
     color: #a566ffff;
@@ -98,6 +98,7 @@ h3 {
     width: 11.25rem;
     text-shadow: 1px 1px 2px black;
     margin-bottom: 0.2rem;
+    margin-top: 0.2rem;
 }
 .approve_btn { background-color: rgb(0, 163, 0) }
 .deny_btn { background-color: rgb(212, 149, 0) }
