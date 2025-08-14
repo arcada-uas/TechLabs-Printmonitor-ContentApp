@@ -23,6 +23,8 @@ https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ii-templates -
                         <hr>
                         <a {% if request.path == url_for('admin_3dprint') %} class="current" {% endif %}href="{{ url_for('admin_3dprint') }}"><li>Manage Print jobs</li></a></div>
                         <a {% if request.path == url_for('admin_memes') %} class="current" {% endif %}href="{{ url_for('admin_memes') }}"><li>Manage Memes</li></a></div>
+                        <hr>
+                        <a href="{{ url_for('logout') }}"><li>Logout</li></a></div>
                     {% else %}
                         <hr>
                         <a {% if request.path == url_for('login') %} class="current" {% endif %}href="{{ url_for('login') }}"><li>Admin login</li></a>

@@ -3,3 +3,5 @@
 # Except these files
 !.gitignore
 !styles.css
+!blob_scene_3_right.svg
+!blob_scene_3_left.svg
