@@ -8,12 +8,19 @@
     {#TODO: Instrubctions for user#}
     <form id="uploadform" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
-        {{ form.photos.label }}<br>
-        {{ form.photos(size=64, id="files") }}<br>
+        <p> {{ form.user.label }}<br>
+            {{ form.user(size=20, class="field") }}<br></p>
+        <p> {{ form.title.label }}<br>
+            {{ form.title(size=20, class="field") }}<br></p>
+        <label class="fileupload">Choose file:<br>
+            {{ form.photos( id="files") }}
+        </label><span id="file-selected"></span><br>
+        <p> {{ form.submit( class="btn" ) }}</p>
     </form>
     <script>
-        document.getElementById("files").onchange = function() {
-    document.getElementById("uploadform").submit();
-};
+        document.querySelector("#uploadform").addEventListener("change", function () {
+            let fileName = document.querySelector("#files").files[0].name;
+            document.querySelector("#file-selected").innerText = fileName;
+        })        
     </script>
 {% endblock %}
