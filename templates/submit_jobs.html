@@ -9,12 +9,19 @@
         {{ form.hidden_tag() }}
         <p>
                 {{ form.user.label }}<br>
-                {{ form.user(size=30) }}<br></p>
+                {{ form.user(size=20, class="field") }}<br></p>
         <p>
                 {{ form.description.label }}<br>
-                {{ form.description(size=30) }}<br></p>
-        {{ form.files.label }}<br>
-        {{ form.files(id="files") }}<br>
-        <p> {{ form.submit() }}</p>
+                {{ form.description(size=20, class="field") }}<br></p>
+        <label class="fileupload">Choose file:<br>
+            {{ form.files(id="files") }}
+        </label><span id="file-selected"></span><br>
+        <p> {{ form.submit( class="btn" ) }}</p>
     </form>
+    <script>
+        document.querySelector("#uploadform").addEventListener("change", function () {
+            let fileName = document.querySelector("#files").files[0].name;
+            document.querySelector("#file-selected").innerText = fileName;
+        })        
+    </script>
 {% endblock %}

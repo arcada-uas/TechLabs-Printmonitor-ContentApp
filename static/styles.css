@@ -123,3 +123,7 @@ h3 {
 #files {
     display: none;
 }
+.checkbx {
+    width: 20px;
+    height: 20px;
+}

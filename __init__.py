@@ -72,8 +72,8 @@ def list_jobs():
 @app.route('/3dprint/submit/', methods=['GET', 'POST'])
 def submit_jobs():
     class PrintForm(FlaskForm):
-        user = StringField('Your username')
-        description = StringField('Short description')
+        user = StringField('Your username:')
+        description = StringField('Short description:')
         files = MultipleFileField(label='STL or 3mf file:', validators=[
             FileRequired(),
             FileAllowed(['stl', '3mf'], 'Only .stl or .3mf files!')])
