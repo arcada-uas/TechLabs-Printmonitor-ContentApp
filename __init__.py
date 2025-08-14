@@ -72,12 +72,12 @@ def list_jobs():
 @app.route('/3dprint/submit/', methods=['GET', 'POST'])
 def submit_jobs():
     class PrintForm(FlaskForm):
-        user = TextAreaField('Your user name')
-        description = TextAreaField('Describe your print job.')
-        files = MultipleFileField(validators=[
+        user = StringField('Your username')
+        description = StringField('Short description')
+        files = MultipleFileField(label='STL or 3mf file:', validators=[
             FileRequired(),
-            FileAllowed(['stl'], 'Only .stl files!')])
-        submit = SubmitField('Upload')
+            FileAllowed(['stl', '3mf'], 'Only .stl or .3mf files!')])
+        submit = SubmitField('Submit print')
     
     form = PrintForm(CombinedMultiDict((flask.request.files, flask.request.form)))
     basedir = os.path.abspath(os.path.dirname(__file__))
@@ -111,11 +111,13 @@ def submit_jobs():
 def submit_memes():
     
     class MemeForm(FlaskForm):
-        user = TextAreaField('Your user name')
+        user = StringField('Your username:')
+        title = StringField('The title of the post:')
+        label = 'The meme:'
         photos = MultipleFileField(validators=[
             FileRequired(),
             FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images only!')])
-        submit = SubmitField('Upload')
+        submit = SubmitField('Submit meme')
 
     form = MemeForm(CombinedMultiDict((flask.request.files, flask.request.form)))
     basedir = os.path.abspath(os.path.dirname(__file__))
@@ -136,6 +138,7 @@ def submit_memes():
                 "deleted" : False,
                 "date" : str(datetime.datetime.now()),
                 "user" : form.user.data,
+                "title": form.title.data,
                 "filename" : new_filename
             }
             meme_list = load_json(meme_data_path)

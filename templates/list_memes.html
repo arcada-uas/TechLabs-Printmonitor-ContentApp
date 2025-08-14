@@ -8,17 +8,19 @@
 
     {% for meme in memes|reverse %}
         {% if not meme.deleted %}
-            {% if meme.featured %}
-                <span class="completed">Featured</span> submission by <b>{{ meme.user }}</b>
-            {% elif meme.approved %}
-                <span class="approved">Approved</span> submission by <b>{{ meme.user }}</b>
-            {% else %}
-                <span class="pending">Pending</span> submission by <b>{{ meme.user }}</b>
-            {% endif %}
+            <p>
                 <div class="meme">
+                    <h3>{{ meme.title }}</h3>
                     <img src={{ url_for('static', filename= meme.filename ) }} height="300">
-                </div>
-                <hr>
+                </div><br>
+                {% if meme.featured %}
+                    <span class="completed">Featured</span> submission by <b>{{ meme.user }}</b>
+                {% elif meme.approved %}
+                    <span class="approved">Approved</span> submission by <b>{{ meme.user }}</b>
+                {% else %}
+                    <span class="pending">Pending</span> submission by <b>{{ meme.user }}</b>
+                {% endif %}
+            </p>
         {% endif %}
     {% endfor %}
 {% endblock %}
